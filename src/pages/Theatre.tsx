@@ -1,19 +1,30 @@
-import { useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
 import VpPage from '../VpPage'
 import { body } from '../bodies/theatre'
-import { theatreEvaluators } from '../processing/theatre'
+import { evaluateTheatre, type TicketType } from '../processing/theatre'
 
-// /theatre?check=adult requires valid + 18+; anything else is the plain valid-student check.
+const OPTIONS: { value: TicketType; label: string }[] = [
+  { value: 'kid', label: 'Criança' },
+  { value: 'adult', label: 'Adulto (18+)' },
+]
+
 export default function Theatre() {
-  const [params] = useSearchParams()
-  const mode = params.get('check') === 'adult' ? 'adult' : 'valid'
+  const [type, setType] = useState<TicketType>('kid')
   return (
     <VpPage
       title="Theatre Tickets"
-      hint={mode === 'adult' ? 'Scan with your wallet · 18+ check' : 'Scan with your wallet'}
+      hint="Scan with your wallet"
       body={body}
       theme="theatre"
-      evaluate={theatreEvaluators[mode]}
-    />
+      evaluate={(claims) => evaluateTheatre(type, claims)}
+    >
+      <div className="options" role="group" aria-label="Ticket type">
+        {OPTIONS.map((o) => (
+          <button key={o.value} aria-pressed={type === o.value} onClick={() => setType(o.value)}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </VpPage>
   )
 }

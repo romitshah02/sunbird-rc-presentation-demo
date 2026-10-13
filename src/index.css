@@ -50,6 +50,20 @@ h1 {
 }
 .qr svg { width: min(60vh, 80vw); height: min(60vh, 80vw); }
 
+.options { display: flex; gap: 1rem; }
+.options button {
+  font: inherit;
+  font-size: 1.5rem;
+  padding: 0.5rem 2rem;
+  border: 3px solid var(--accent);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+.options button[aria-pressed='true'] { background: var(--accent); color: var(--accent-fg); }
+.options button:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+
 .result { padding: 2rem 3rem; border: 0.5rem solid; border-radius: 1rem; }
 .result[data-ok='true'] { border-color: #7bdc8c; color: #7bdc8c; }
 .result[data-ok='false'] { border-color: #ff9a9a; color: #ff9a9a; }
