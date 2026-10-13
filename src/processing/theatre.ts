@@ -10,7 +10,7 @@ const MIN_ADULT_AGE = 18
 export function evaluateTheatre(type: TicketType, claims: Claims): Verdict {
   const c = claims[CREDENTIAL_ID]
   const name = typeof c?.studentName === 'string' ? c.studentName : 'Student'
-  if (c?.completionStatus !== 'IN_PROGRESS') {
+  if (c?.status !== 'ACTIVE') {
     return { ok: false, message: `${name}: not an active student` }
   }
   if (type === 'adult') {

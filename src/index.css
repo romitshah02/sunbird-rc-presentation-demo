@@ -8,15 +8,29 @@ body { margin: 0; }
 
 .not-found { margin: 2rem; font-size: 1.25rem; }
 
-/* Contrast: text on bg >= 7:1, accent on bg >= 4.5:1, button text on accent >= 4.5:1 */
+/*
+  Per-page tokens. Contrast checked: fg/bg >= 7:1, accent/bg >= 4.5:1, accent-fg/accent >= 4.5:1,
+  ok/bad on bg >= 4.5:1.
+  Theatre = playbill (dark burgundy, bulb-ring QR). Transport = bus-stop sign (yellow, square plate).
+  Bank = quiet paper (light, green ink).
+*/
 .page[data-theme='theatre'] {
-  --bg: #12060a; --fg: #f6ecd2; --accent: #e0b44c; --accent-fg: #12060a; --frame: #b3122b;
+  --bg: #1d1519; --fg: #eadfd0; --accent: #c9a45c; --accent-fg: #1d1519;
+  --frame: #c9a45c; --frame-style: dotted; --radius: 1rem;
+  --ok: #8fc79a; --bad: #e0a0a0;
+  --display: 'Bodoni Moda', Georgia, serif; --display-style: italic; --display-weight: 600;
 }
 .page[data-theme='transport'] {
-  --bg: #0b5fff; --fg: #ffffff; --accent: #ffd400; --accent-fg: #0a2a6b; --frame: #ffd400;
+  --bg: #e4d8b0; --fg: #1f1d16; --accent: #1f1d16; --accent-fg: #e4d8b0;
+  --frame: #1f1d16; --frame-style: solid; --radius: 0;
+  --ok: #2f5d34; --bad: #8a2b22;
+  --display: 'Barlow Condensed', 'Arial Narrow', sans-serif; --display-style: normal; --display-weight: 800;
 }
 .page[data-theme='bank'] {
-  --bg: #0a1f44; --fg: #ffffff; --accent: #9ec5ff; --accent-fg: #0a1f44; --frame: #ffffff;
+  --bg: #f1f2ee; --fg: #20302a; --accent: #3f6b58; --accent-fg: #ffffff;
+  --frame: #3f6b58; --frame-style: solid; --radius: 1rem;
+  --ok: #3f6b58; --bad: #9a3a34;
+  --display: 'Public Sans', system-ui, sans-serif; --display-style: normal; --display-weight: 600;
 }
 
 .page {
@@ -34,8 +48,11 @@ body { margin: 0; }
 
 h1 {
   margin: 0;
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  line-height: 1.1;
+  font-family: var(--display);
+  font-style: var(--display-style);
+  font-weight: var(--display-weight);
+  font-size: clamp(2.75rem, 7vw, 6rem);
+  line-height: 1.05;
   color: var(--accent);
 }
 
@@ -44,19 +61,19 @@ h1 {
 .qr {
   padding: 1rem;
   background: #fff;
-  border: 0.5rem solid var(--frame);
-  border-radius: 1rem;
+  border: 0.6rem var(--frame-style) var(--frame);
+  border-radius: var(--radius);
   line-height: 0;
 }
 .qr svg { width: min(60vh, 80vw); height: min(60vh, 80vw); }
 
-.options { display: flex; gap: 1rem; }
+.options { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
 .options button {
   font: inherit;
   font-size: 1.5rem;
   padding: 0.5rem 2rem;
   border: 3px solid var(--accent);
-  border-radius: 0.5rem;
+  border-radius: calc(var(--radius) / 2);
   background: transparent;
   color: var(--accent);
   cursor: pointer;
@@ -64,23 +81,45 @@ h1 {
 .options button[aria-pressed='true'] { background: var(--accent); color: var(--accent-fg); }
 .options button:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
 
-.result { padding: 2rem 3rem; border: 0.5rem solid; border-radius: 1rem; }
-.result[data-ok='true'] { border-color: #7bdc8c; color: #7bdc8c; }
-.result[data-ok='false'] { border-color: #ff9a9a; color: #ff9a9a; }
-.result p { margin: 0 0 1rem; font-size: 1.75rem; }
-.result .verdict { font-size: clamp(3rem, 8vw, 6rem); font-weight: 700; }
+.result { padding: 1.5rem 2rem; border: 0.5rem solid; border-radius: var(--radius); }
+.result[data-ok='true'] { border-color: var(--ok); color: var(--ok); }
+.result[data-ok='false'] { border-color: var(--bad); color: var(--bad); }
+.result p { margin: 0 0 1rem; font-size: 1.25rem; }
+.claims {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1.5rem;
+  margin: 0 0 1.5rem;
+  text-align: left;
+  color: var(--fg);
+  font-size: 1rem;
+}
+.claims > div { display: contents; }
+.claims dt { opacity: 0.8; }
+.claims dd { margin: 0; overflow-wrap: anywhere; }
+
+/* Bank has 17 claims: header over value, several columns. */
+.page[data-theme='bank'] .result { width: min(100%, 72rem); }
+.page[data-theme='bank'] .claims { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1.5rem 2rem; }
+.page[data-theme='bank'] .claims > div { display: block; }
+.page[data-theme='bank'] .claims dt { font-size: 0.875rem; }
+.page[data-theme='bank'] .claims dd { margin-top: 0.25rem; font-weight: 600; }
+.result .verdict { font-family: var(--display); font-size: clamp(1.75rem, 4vw, 3rem); font-weight: 700; }
 
 .error p { margin: 0 0 1rem; font-size: 1.5rem; }
+.request,
 .result button,
 .error button {
   font: inherit;
   font-size: 1.5rem;
   padding: 0.5rem 2rem;
   border: 0;
-  border-radius: 0.5rem;
+  border-radius: calc(var(--radius) / 2);
   background: var(--accent);
   color: var(--accent-fg);
   cursor: pointer;
 }
+.result button { font-size: 1.125rem; }
+.request:focus-visible,
 .result button:focus-visible,
 .error button:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }

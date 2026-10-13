@@ -18,11 +18,13 @@ const claims = [
   'percentage',
 ]
 
+export const CREDENTIAL_ID = 'bank_account'
+
 export const body = {
   dcql_query: {
     credentials: [
       {
-        id: 'bank_account',
+        id: CREDENTIAL_ID,
         format: 'dc+sd-jwt',
         meta: { vct_values: ['https://sandbox-rc.sunbird.org/horizonte/vct/student'] },
         claims: claims.map((c) => ({ path: [c] })),
