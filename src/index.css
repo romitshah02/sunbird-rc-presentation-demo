@@ -1,0 +1,72 @@
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+.not-found { margin: 2rem; font-size: 1.25rem; }
+
+/* Contrast: text on bg >= 7:1, accent on bg >= 4.5:1, button text on accent >= 4.5:1 */
+.page[data-theme='theatre'] {
+  --bg: #12060a; --fg: #f6ecd2; --accent: #e0b44c; --accent-fg: #12060a; --frame: #b3122b;
+}
+.page[data-theme='transport'] {
+  --bg: #0b5fff; --fg: #ffffff; --accent: #ffd400; --accent-fg: #0a2a6b; --frame: #ffd400;
+}
+.page[data-theme='bank'] {
+  --bg: #0a1f44; --fg: #ffffff; --accent: #9ec5ff; --accent-fg: #0a1f44; --frame: #ffffff;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: var(--bg);
+  color: var(--fg);
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.1;
+  color: var(--accent);
+}
+
+.hint { margin: 0; font-size: clamp(1.5rem, 3vw, 2.5rem); }
+
+.qr {
+  padding: 1rem;
+  background: #fff;
+  border: 0.5rem solid var(--frame);
+  border-radius: 1rem;
+  line-height: 0;
+}
+.qr svg { width: min(60vh, 80vw); height: min(60vh, 80vw); }
+
+.result { padding: 2rem 3rem; border: 0.5rem solid; border-radius: 1rem; }
+.result[data-ok='true'] { border-color: #7bdc8c; color: #7bdc8c; }
+.result[data-ok='false'] { border-color: #ff9a9a; color: #ff9a9a; }
+.result p { margin: 0 0 1rem; font-size: 1.75rem; }
+.result .verdict { font-size: clamp(3rem, 8vw, 6rem); font-weight: 700; }
+
+.error p { margin: 0 0 1rem; font-size: 1.5rem; }
+.result button,
+.error button {
+  font: inherit;
+  font-size: 1.5rem;
+  padding: 0.5rem 2rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: var(--accent-fg);
+  cursor: pointer;
+}
+.result button:focus-visible,
+.error button:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
