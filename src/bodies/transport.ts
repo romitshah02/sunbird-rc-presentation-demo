@@ -12,7 +12,7 @@ export const body = {
           { path: ['instituteName'] },
           { path: ['program'] },
           { path: ['enrollmentDate'] },
-          { path: ['status'], values: ['ACTIVE'] },
+          { path: ['status'] },
         ],
       },
     ],

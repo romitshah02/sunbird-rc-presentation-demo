@@ -11,12 +11,12 @@ export function evaluateTheatre(type: TicketType, claims: Claims): Verdict {
   const c = claims[CREDENTIAL_ID]
   const name = typeof c?.studentName === 'string' ? c.studentName : 'Student'
   if (c?.status !== 'ACTIVE') {
-    return { ok: false, message: `${name}: not an active student` }
+    return { ok: false, message: `${name}: enrolment status is ${String(c?.status ?? 'missing')}` }
   }
   if (type === 'adult') {
     const age = Number(c.age)
     if (!Number.isFinite(age) || age < MIN_ADULT_AGE) {
-      return { ok: false, message: `${name}: must be ${MIN_ADULT_AGE} or older` }
+      return { ok: false, message: `${name}: age is ${String(c.age ?? 'missing')}, must be ${MIN_ADULT_AGE} or older` }
     }
   }
   return { ok: true, message: name }

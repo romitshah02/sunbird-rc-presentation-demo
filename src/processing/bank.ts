@@ -15,7 +15,7 @@ export function evaluateBank(claims: Claims): Verdict {
   const name = typeof c.studentName === 'string' ? c.studentName : 'Student'
   const reasons: string[] = []
 
-  if (c.status !== 'ACTIVE') reasons.push('enrolment is not active')
+  if (c.status !== 'ACTIVE') reasons.push(`enrolment status is ${String(c.status ?? 'missing')}`)
 
   const missingKyc = KYC_CLAIMS.filter((k) => !present(c[k]))
   if (missingKyc.length) reasons.push(`missing ${missingKyc.join(', ')}`)
@@ -25,7 +25,7 @@ export function evaluateBank(claims: Claims): Verdict {
   } else if (Number(c.age) < ADULT_AGE) {
     const missingGuardian = GUARDIAN_CLAIMS.filter((k) => !present(c[k]))
     if (missingGuardian.length) {
-      reasons.push(`under ${ADULT_AGE}, missing ${missingGuardian.join(', ')}`)
+      reasons.push(`age is ${String(c.age)}, under ${ADULT_AGE}, and missing ${missingGuardian.join(', ')}`)
     }
   }
 

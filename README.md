@@ -23,7 +23,7 @@ There is no navigation. Open each page by its URL.
 5. The page polls `GET <<verifier_url>>/vp/status/{transaction_id}` every 2 seconds until the status says `verified: true`. It gives up after 5 minutes.
 6. The received claims are listed, and the page's check produces the verdict.
 
-The request bodies use the `dc+sd-jwt` format with the Sunbird RC sandbox student credential type (`.../vct/student`). Some claims carry a `values` filter, for example `status` must be `ACTIVE`, so the wallet only offers matching credentials.
+The request bodies use the `dc+sd-jwt` format with the Sunbird RC sandbox student credential type (`.../vct/student`). The bodies request claims without value filters, so the wallet presents any student credential and the app's own checks decide eligibility and show the reason, for example "enrolment status is INACTIVE".
 
 ## Run it
 

@@ -10,7 +10,7 @@ export const body = {
         claims: [
           { path: ['studentName'] },
           { path: ['age'] },
-          { path: ['status'], values: ['ACTIVE'] },
+          { path: ['status'] },
         ],
       },
     ],

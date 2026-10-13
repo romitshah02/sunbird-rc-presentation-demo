@@ -7,7 +7,7 @@ export function evaluateTransport(claims: Claims): Verdict {
   const c = claims[CREDENTIAL_ID]
   const name = typeof c?.studentName === 'string' ? c.studentName : 'Student'
   if (c?.status !== 'ACTIVE') {
-    return { ok: false, headline: '✗ Not Eligible For Bus Pass', message: `${name}: enrolment is not active` }
+    return { ok: false, headline: '✗ Not Eligible For Bus Pass', message: `${name}: enrolment status is ${String(c?.status ?? 'missing')}` }
   }
   return { ok: true, headline: '✓ Eligible For Bus Pass', message: name }
 }
