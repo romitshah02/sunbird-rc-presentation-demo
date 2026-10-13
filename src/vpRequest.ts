@@ -49,6 +49,9 @@ const sleep = (ms: number, signal: AbortSignal) =>
     )
   })
 
+const NO_CARD_MESSAGE =
+  'No matching student card was shared. The wallet has no matching card, or the holder declined the request.'
+
 // Polls .../vp/status/{id} (derived from the request URL) until the wallet has responded.
 // ponytail: any status that isn't verified:true keeps polling unless it names a failure;
 // tighten once the real pending/failed status values are known.
@@ -61,7 +64,9 @@ export async function awaitClaims(transactionId: string, signal: AbortSignal): P
     const data = await res.json()
     if (data?.verified === true) return data.claims ?? {}
     if (/fail|reject|expire|denied|error/i.test(String(data?.status))) {
-      throw new Error(`Verification ${data.status}`)
+      // "missing vp_token": the wallet answered without sharing anything.
+      if (/missing vp_token/i.test(String(data?.error))) throw new Error(NO_CARD_MESSAGE)
+      throw new Error(`Verification ${data.status}${data.error ? `: ${data.error}` : ''}`)
     }
     await sleep(POLL_MS, signal)
   }
