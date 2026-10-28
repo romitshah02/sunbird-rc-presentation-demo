@@ -1,23 +1,29 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './index.css'
+import { I18nProvider, useI18n } from './i18n/i18n'
+import LanguageSelect from './LanguageSelect'
+import Home from './Home'
 import Theatre from './pages/Theatre'
 import Transport from './pages/Transport'
 import Bank from './pages/Bank'
 
-const NotFound = () => <p className="not-found">Not found</p>
+const NotFound = () => <p className="not-found">{useI18n().t('notFound')}</p>
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/theatre" replace />} />
-        <Route path="/theatre" element={<Theatre />} />
-        <Route path="/transport" element={<Transport />} />
-        <Route path="/bank" element={<Bank />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <I18nProvider>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/theatre" element={<Theatre />} />
+          <Route path="/transport" element={<Transport />} />
+          <Route path="/bank" element={<Bank />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <LanguageSelect />
+      </BrowserRouter>
+    </I18nProvider>
   </StrictMode>,
 )

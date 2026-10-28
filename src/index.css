@@ -8,6 +8,92 @@ body { margin: 0; }
 
 .not-found { margin: 2rem; font-size: 1.25rem; }
 
+/* Language dropdown (LanguageSelect.tsx) — namespaced "ls-". Fixed top, inline end. The Transport
+   and Bank top bars reserve room for it (padding-inline below), so it needs a fixed width. */
+.ls-select {
+  position: fixed; inset-inline-end: 2.5rem; top: 1rem; z-index: 100;
+  width: 8.5rem;
+  font: inherit; font-size: 0.9rem; padding: 0.5rem 0.75rem;
+  background: #fff; color: #1d2433; cursor: pointer;
+  border: 2px solid #1d2433; border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.ls-select:focus-visible { outline: 3px solid #2f6fed; outline-offset: 2px; }
+
+/* Back link (BackLink.tsx). In the Transport/Bank top bars it sits before the brand; the brand's
+   auto margin keeps the end-side item pushed to the end. On Theatre it floats in the top corner at
+   the inline start. */
+.back-link {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.8rem; font-size: 0.9rem; font-weight: 600; text-decoration: none;
+  color: #1d2433; background: #fff; border: 1.5px solid #c9ced9; border-radius: 999px;
+}
+.back-link:hover { border-color: #1d2433; }
+.back-link:focus-visible { outline: 3px solid #2f6fed; outline-offset: 2px; }
+.tp-topbar .back-link, .bp-topbar .back-link { margin-inline-end: 1.25rem; }
+.tp-topbar .tp-brand, .bp-topbar .bp-brand { margin-inline-end: auto; }
+.back-link-corner { position: absolute; top: 1rem; inset-inline-start: 1.25rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .back-link { transition: border-color 140ms ease; }
+  .back-link svg { transition: transform 140ms ease; }
+  .back-link:hover svg { transform: translateX(-3px); }
+}
+/* Mirror the drawn arrows in RTL. `scale` applies before `transform`, so the hover translateX
+   values above and below flip with it and still move toward the arrow tip. */
+[dir='rtl'] .back-link svg, [dir='rtl'] .hm-go { scale: -1 1; }
+
+/* Home page (Home.tsx) — namespaced "hm-". */
+.hm-page {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(2rem, 5vw, 3.5rem); padding: 4rem 1.5rem 6.5rem;
+  background:
+    radial-gradient(60rem 28rem at 50% -8rem, #e4e9f7 0%, transparent 70%),
+    #f6f7fa;
+  color: #1d2433; text-align: center;
+}
+.hm-head { max-width: 40rem; }
+.hm-title { margin: 0; font-size: clamp(2.25rem, 5.5vw, 3.75rem); line-height: 1.08; letter-spacing: -0.02em; }
+.hm-sub { margin: 1rem 0 0; font-size: 1.1875rem; line-height: 1.5; color: #4a5468; }
+.hm-options {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1.5rem; width: min(100%, 64rem);
+}
+/* --hm-accent is the same colour each page uses for its own buttons. */
+.hm-theatre { --hm-accent: #9c1f1f; --hm-tint: #f8e9e9; }
+.hm-transport { --hm-accent: #1f3a8a; --hm-tint: #e6ecfa; }
+.hm-bank { --hm-accent: #6c4fe0; --hm-tint: #eeeafc; }
+.hm-card {
+  position: relative;
+  display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;
+  padding: 1.75rem 1.5rem 1.5rem; text-align: start; text-decoration: none;
+  background: #fff; color: inherit;
+  border: 1px solid #dfe3ec; border-top: 4px solid var(--hm-accent); border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(29, 36, 51, 0.06), 0 12px 28px -18px rgba(29, 36, 51, 0.35);
+}
+.hm-art {
+  display: grid; place-items: center; width: 100%; height: 11rem; margin-bottom: 0.75rem; padding: 0.75rem;
+  border-radius: 0.75rem; background: var(--hm-tint); overflow: hidden;
+}
+/* Every drawing gets the same square box, so the 3:2 bus and the square movie/bank art line up.
+   --hm-zoom tunes how much of that box the drawing's subject fills. */
+.hm-art img { width: 9.5rem; height: 9.5rem; object-fit: contain; scale: var(--hm-zoom, 1); }
+.hm-transport { --hm-zoom: 1.25; }
+.hm-card-title { font-size: 1.375rem; font-weight: 700; line-height: 1.25; }
+.hm-card-note { font-size: 1rem; line-height: 1.45; color: #4a5468; }
+.hm-go { margin-top: 1rem; align-self: flex-end; color: var(--hm-accent); }
+.hm-card:focus-visible { outline: 3px solid var(--hm-accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .hm-card { transition: transform 160ms ease, box-shadow 160ms ease; }
+  .hm-go { transition: transform 160ms ease; }
+  .hm-art img { transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .hm-card:hover .hm-art img,
+  .hm-card:focus-visible .hm-art img { transform: scale(1.08) translateY(-3px); }
+  .hm-card:hover { transform: translateY(-4px); box-shadow: 0 1px 2px rgba(29, 36, 51, 0.06), 0 18px 32px -16px rgba(29, 36, 51, 0.45); }
+  .hm-card:hover .hm-go { transform: translateX(4px); }
+}
+.hm-card:hover { box-shadow: 0 1px 2px rgba(29, 36, 51, 0.06), 0 18px 32px -16px rgba(29, 36, 51, 0.45); }
+
 /* Transport page (TransportPortal.tsx) — namespaced "tp-" so it can't collide with the other pages. */
 .tp-page {
   min-height: 100vh;
@@ -19,7 +105,8 @@ body { margin: 0; }
 
 .tp-topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem clamp(1.25rem, 4vw, 3rem);
+  padding-block: 1rem;
+  padding-inline: clamp(1.25rem, 4vw, 3rem) calc(8.5rem + 3.5rem);
   background: #fff; box-shadow: 0 1px 0 rgba(22,33,64,0.06);
 }
 .tp-brand { display: flex; align-items: center; gap: 0.7rem; font-weight: 700; font-size: 1rem; }
@@ -109,7 +196,7 @@ body { margin: 0; }
 .tp-claim-rows { display: flex; flex-direction: column; gap: 0.6rem; margin: 0; padding: 0; }
 .tp-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0.8rem; background: #fff; border-radius: 0.65rem; font-size: 0.85rem; }
 .tp-row dt { margin: 0; color: #5b6b8c; }
-.tp-row dd { margin: 0; font-weight: 600; color: #13203f; text-align: right; }
+.tp-row dd { margin: 0; font-weight: 600; color: #13203f; text-align: end; unicode-bidi: plaintext; }
 
 /*
   Bank page only (BankPortal.tsx) — account-opening site chrome + a step-tracker verification
@@ -119,7 +206,7 @@ body { margin: 0; }
 
 .bp-topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem clamp(1.25rem,4vw,3rem); background: #fff;
+  padding-block: 1rem; padding-inline: clamp(1.25rem,4vw,3rem) calc(8.5rem + 3.5rem); background: #fff;
   box-shadow: 0 1px 0 rgba(20,24,34,0.06);
 }
 .bp-brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1rem; color: #1b2130; }
@@ -195,7 +282,7 @@ body { margin: 0; }
 .bp-kv { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; font-size: 0.9rem; }
 .bp-kv + .bp-kv { border-top: 1px dashed #eef0f4; }
 .bp-kv dt { margin: 0; color: #5c6475; }
-.bp-kv dd { margin: 0; font-weight: 600; color: #1b2130; text-align: right; }
+.bp-kv dd { margin: 0; font-weight: 600; color: #1b2130; text-align: end; unicode-bidi: plaintext; }
 
 .bp-guardian-note { margin-top: 0.75rem; font-size: 0.82rem; color: #8891a3; background: #f7f8fa; padding: 0.6rem 0.8rem; border-radius: 0.6rem; }
 
@@ -214,7 +301,7 @@ body { margin: 0; }
   Theatre page only (TheatrePortal.tsx) — a ticket-stub layout instead of the shared centered
   .page template. Namespaced "tt-" like transport's "tp-" and bank's "bp-".
 */
-.tt-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 1.25rem; background: #eef0f3; color: #1c1a18; }
+.tt-page { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 1.25rem; background: #eef0f3; color: #1c1a18; }
 
 .tt-ticket { width: min(100%, 24rem); background: #fff; border-radius: 1.1rem; box-shadow: 0 1.25rem 2.5rem -1.4rem rgba(28,26,24,0.35); overflow: hidden; }
 

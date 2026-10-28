@@ -1,26 +1,30 @@
 import { useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
+import BackLink from './BackLink'
 import { useVpFlow } from './useVpFlow'
 import { body, CREDENTIAL_ID } from './bodies/theatre'
 import { evaluateTheatre, type TicketType } from './processing/theatre'
+import { useI18n } from './i18n/i18n'
 
 // Placeholder poster — drop the real file in public/poster.jpg (same folder as favicon.svg).
-const MOVIE_TITLE = 'Homem-Aranha: Longe de Casa'
-const MOVIE_POSTER_SRC = '/image.png'
+const MOVIE_POSTER_SRC = `${import.meta.env.BASE_URL}image.png`
 
-const OPTIONS: { value: TicketType; label: string }[] = [
-  { value: 'kid', label: 'Criança' },
-  { value: 'adult', label: 'Adulto (18+)' },
-]
+const OPTIONS = [
+  { value: 'kid', label: 'theatre.kid' },
+  { value: 'adult', label: 'theatre.adult' },
+] as const
 
 // Same request/poll flow and the same two claims (age, status) as before (see useVpFlow +
 // VpPage) — this is only a different layout, styled as a ticket stub instead of the shared
 // centered template.
 export default function TheatrePortal() {
+  const { t, reasonText, errorText } = useI18n()
+  const movieTitle = t('theatre.movieTitle')
   const [type, setType] = useState<TicketType>('kid')
   const { state, retry } = useVpFlow(body)
   const verdict = state.status === 'verified' ? evaluateTheatre(type, state.claims) : null
   const claims = state.status === 'verified' ? (state.claims[CREDENTIAL_ID] ?? {}) : undefined
+  const who = verdict?.name ?? t('common.student')
   const field = (name: string) => {
     const v = claims?.[name]
     return v === undefined || v === null || v === '' ? '—' : String(v)
@@ -28,11 +32,12 @@ export default function TheatrePortal() {
 
   return (
     <main className="tt-page">
+      <BackLink className="back-link-corner" />
       <div className="tt-ticket">
         <div className="tt-top">
           <div className="tt-top-text">
-            <h1>{MOVIE_TITLE}</h1>
-            <p className="tt-meta">(Livre) · Ingresso Estudantil · Verificação Digital</p>
+            <h1>{movieTitle}</h1>
+            <p className="tt-meta">{t('theatre.meta')}</p>
             <p className="tt-venue-name">Cine Porto Verde</p>
             <p className="tt-venue-addr">
               Rua das Palmeiras, 450 — Centro
@@ -40,22 +45,22 @@ export default function TheatrePortal() {
               Porto Verde
             </p>
           </div>
-          <img className="tt-poster" src={MOVIE_POSTER_SRC} alt={MOVIE_TITLE} />
+          <img className="tt-poster" src={MOVIE_POSTER_SRC} alt={movieTitle} />
         </div>
 
         <div className="tt-session">
-          <h3>SALA 01</h3>
+          <h3>{t('theatre.room')}</h3>
           <p className="tt-row">
-            <span>Sáb, 6 Jul</span>
+            <span>{t('theatre.date')}</span>
             <span className="tt-sep">|</span>
             <span>19:30</span>
           </p>
-          <p className="tt-type-label">Tipo de ingresso</p>
+          <p className="tt-type-label">{t('theatre.ticketType')}</p>
         </div>
-        <div className="tt-options" role="group" aria-label="Tipo de ingresso">
+        <div className="tt-options" role="group" aria-label={t('theatre.ticketType')}>
           {OPTIONS.map((o) => (
             <button key={o.value} type="button" aria-pressed={type === o.value} onClick={() => setType(o.value)}>
-              {o.label}
+              {t(o.label)}
             </button>
           ))}
         </div>
@@ -67,9 +72,9 @@ export default function TheatrePortal() {
 
         {state.status === 'idle' && (
           <div className="tt-qr-zone">
-            <p className="tt-status-text">Pronto para iniciar a verificação.</p>
+            <p className="tt-status-text">{t('common.ready')}</p>
             <button type="button" className="tt-cta" onClick={retry}>
-              Gerar código
+              {t('theatre.generate')}
             </button>
           </div>
         )}
@@ -77,16 +82,16 @@ export default function TheatrePortal() {
         {state.status === 'loading' && (
           <div className="tt-qr-zone">
             <p role="status" className="tt-status-text">
-              Preparando o código…
+              {t('common.preparing')}
             </p>
           </div>
         )}
 
         {state.status === 'error' && (
           <div className="tt-qr-zone" role="alert">
-            <p className="tt-status-text">{state.message}</p>
+            <p className="tt-status-text">{errorText(state.error)}</p>
             <button type="button" className="tt-cta" onClick={retry}>
-              Tentar novamente
+              {t('common.retry')}
             </button>
           </div>
         )}
@@ -102,13 +107,13 @@ export default function TheatrePortal() {
                 bgColor="#ffffff"
                 fgColor="#1c1a18"
                 role="img"
-                aria-label="QR code: scan with your wallet"
+                aria-label={t('qr.alt')}
               />
             </div>
             <p className="tt-qr-cap">
-              Escaneie com a carteira digital
+              {t('theatre.scan')}
               <br />
-              <b>Válido por 5 minutos</b>
+              <b>{t('common.valid5min')}</b>
             </p>
           </div>
         )}
@@ -127,29 +132,29 @@ export default function TheatrePortal() {
                   </svg>
                 )}
               </div>
-              <p className="tt-result-title">{verdict.ok ? '✓ Válido' : '✗ Não válido'}</p>
-              <p className="tt-result-sub">{verdict.message}</p>
+              <p className="tt-result-title">{verdict.ok ? t('theatre.valid') : t('theatre.notValid')}</p>
+              <p className="tt-result-sub">{verdict.ok ? who : `${who}: ${verdict.reasons.map(reasonText).join('; ')}`}</p>
             </div>
             <div className="tt-foot">
               <dl className="tt-foot-list">
                 <div className="tt-line">
-                  <dt>Status</dt>
+                  <dt>{t('label.status')}</dt>
                   <dd>{field('status')}</dd>
                 </div>
                 <div className="tt-line">
-                  <dt>Idade</dt>
+                  <dt>{t('label.age')}</dt>
                   <dd>{field('age')}</dd>
                 </div>
                 <div className="tt-line tt-total">
-                  <dt>Resultado</dt>
+                  <dt>{t('common.result')}</dt>
                   <dd className={verdict.ok ? 'ok' : 'bad'}>
-                    {verdict.ok ? '✓ Entrada liberada' : '✗ Entrada negada'}
+                    {verdict.ok ? t('theatre.granted') : t('theatre.denied')}
                   </dd>
                 </div>
               </dl>
             </div>
             <button type="button" className="tt-cta" onClick={retry}>
-              Escanear novamente
+              {t('theatre.again')}
             </button>
           </>
         )}

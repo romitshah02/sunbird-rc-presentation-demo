@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { awaitClaims, requestQr, type Claims } from './vpRequest'
+import { awaitClaims, requestQr, VpError, type Claims, type FlowError } from './vpRequest'
 
 export type VpState =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'error'; message: string }
+  | { status: 'error'; error: FlowError }
   | { status: 'ready'; link: string }
   | { status: 'verified'; claims: Claims }
 
@@ -29,7 +29,11 @@ export function useVpFlow(body: unknown) {
       setState({ status: 'verified', claims })
     })().catch((err: unknown) => {
       if (err instanceof DOMException && err.name === 'AbortError') return
-      setState({ status: 'error', message: err instanceof Error ? err.message : String(err) })
+      const error: FlowError =
+        err instanceof VpError
+          ? { code: err.code, params: err.params }
+          : { code: 'unknown', params: { message: err instanceof Error ? err.message : String(err) } }
+      setState({ status: 'error', error })
     })
     return () => ctrl.abort()
   }, [body, attempt])

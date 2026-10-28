@@ -4,11 +4,11 @@ A demo app that shows OID4VC verifiable credentials in use. A student holds a cr
 
 Each page plays a different relying party. It asks the verifier for a presentation request, shows the request as a QR code, and waits for the holder to scan it with a wallet and share their student credential. It then shows the claims it received and a verdict.
 
-There is no navigation. Open each page by its URL.
+The home page at `/` lists the three options and links to each page. The pages themselves have no navigation back, so open them from the home page or by URL.
 
 | URL | Relying party | Eligibility check |
 |---|---|---|
-| `/theatre` (also `/`) | Movie theatre | Kid: `status` is `ACTIVE`. Adult (18+): `status` is `ACTIVE` and `age` is 18 or more. Chosen with the Criança / Adulto toggle. |
+| `/theatre` | Movie theatre | Kid: `status` is `ACTIVE`. Adult (18+): `status` is `ACTIVE` and `age` is 18 or more. Chosen with the Child / Adult toggle. |
 | `/transport` | City bus transport | `status` is `ACTIVE`. Headline: "Eligible For Bus Pass". |
 | `/bank` | Student bank account | `status` is `ACTIVE`, name, email, phone, address and nationality are present, and the student is 18+ or has guardian name, relationship and phone. Headline: "Eligible For Student Bank Account". |
 
@@ -62,11 +62,24 @@ docker run -p 8080:80 vp-qr
 
 Vite inlines `VITE_*` values at build time, so the verifier URL is a build argument. Changing it means rebuilding the image.
 
+## Languages
+
+Every page, including the home page, has a language dropdown in the top corner: English, Português, Français, Español and العربية (Arabic). English is the default, and the choice is remembered in the browser. Arabic is written right to left, so the page direction follows the language: `i18n.tsx` sets `dir="rtl"` on the `<html>` element for Arabic and `ltr` otherwise, and the layout mirrors through CSS logical properties.
+
+- The text lives in `src/i18n/`: `en.ts` (default, and the list of keys), `pt.ts`, `fr.ts`, `es.ts` and `ar.ts`. `i18n.tsx` has the provider and the `useI18n()` hook; pages call `t('some.key')`.
+- The other dictionaries are typed against `en.ts`, so a missing or extra key fails `npm run build`.
+- Eligibility reasons and verifier errors are language-free codes (`src/processing/`, `src/vpRequest.ts`) and are translated in the page, under the `reason.*` and `error.*` keys.
+- Proper nouns (Cine Porto Verde, Banco Horizonte, Porto Verde, the street address) and values from the wallet are shown as they are.
+- To add a language: copy `en.ts` to a new file typed as `Dict`, translate the values, then add it to `DICTS` and `LANGS` in `i18n.tsx` (and to `RTL_LANGS` if it is written right to left).
+
 ## Project layout
 
 ```
 src/
   main.tsx          routes: /, /theatre, /transport, /bank, anything else is "Not found"
+  Home.tsx          home page at /, links to the three pages
+  i18n/             language dictionaries (en, pt, fr, es, ar) and the provider / useI18n hook
+  LanguageSelect.tsx  the language dropdown, shown on every page
   VpPage.tsx        shared page: Request button, QR, status polling, claims and verdict
   vpRequest.ts      verifier calls: requestQr (POST) and awaitClaims (status polling)
   bodies/           the static request body for each page
@@ -81,4 +94,4 @@ To change what a page asks for, edit its file in `src/bodies/`. To change who is
 
 - **The verdict is worked out in the browser** from the verifier's status response. That is fine for a demo, but it is not tamper-proof. A real relying party should decide on its own backend.
 - **The status values for a pending or failed scan are assumed.** Any status other than `verified: true` keeps polling, unless it contains fail, reject, expire, denied or error.
-- **Page text is mostly English**, except the Criança / Adulto toggle labels.
+- **Translations are not reviewed by native speakers.** The French and Spanish text in particular should be checked before a public demo.

@@ -1,7 +1,9 @@
 import { QRCodeSVG } from 'qrcode.react'
+import BackLink from './BackLink'
 import { useVpFlow } from './useVpFlow'
 import { body, CREDENTIAL_ID } from './bodies/bank'
 import { evaluateBank } from './processing/bank'
+import { useI18n } from './i18n/i18n'
 
 const present = (v: unknown) => (typeof v === 'string' ? v.trim() !== '' : v != null)
 
@@ -9,6 +11,7 @@ const present = (v: unknown) => (typeof v === 'string' ? v.trim() !== '' : v != 
 // this is only a different layout for the bank use case: a bank-style "account opening" page
 // with a step tracker (sent -> processing -> result) instead of the shared centered template.
 export default function BankPortal() {
+  const { t, reasonText, errorText } = useI18n()
   const { state, retry } = useVpFlow(body)
   const claims = state.status === 'verified' ? (state.claims[CREDENTIAL_ID] ?? {}) : undefined
   const verdict = state.status === 'verified' ? evaluateBank(state.claims) : null
@@ -17,13 +20,6 @@ export default function BankPortal() {
     const v = claims?.[name]
     return present(v) ? String(v) : '—'
   }
-
-  // The message is always "<name>: reason; reason; ..." on failure (see evaluateBank) — split
-  // it back into a list rather than inventing separate reason text.
-  const reasons =
-    verdict && !verdict.ok && verdict.message.includes(': ')
-      ? verdict.message.slice(verdict.message.indexOf(': ') + 2).split('; ')
-      : []
 
   const guardianFields = ['guardianName', 'guardianRelationship', 'guardianPhone'] as const
   const hasGuardianData = guardianFields.some((f) => present(claims?.[f]))
@@ -34,6 +30,7 @@ export default function BankPortal() {
   return (
     <main className="bp-page">
       <header className="bp-topbar">
+        <BackLink />
         <div className="bp-brand">
           <span className="bp-mark" aria-hidden="true">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -45,20 +42,16 @@ export default function BankPortal() {
           Banco Horizonte
         </div>
         <nav className="bp-nav" aria-hidden="true">
-          <span>Pessoa Física</span>
-          <span className="current">Conta Universitária</span>
-          <span>Ajuda</span>
+          <span>{t('bank.navPersonal')}</span>
+          <span className="current">{t('bank.navAccount')}</span>
+          <span>{t('bank.navHelp')}</span>
         </nav>
       </header>
 
       <div className="bp-hero">
-        <span className="bp-eyebrow">Conta Universitária Digital</span>
-        <h1>Abra sua conta compartilhando suas credenciais verificadas</h1>
-        <p>
-          Sem anexar comprovante de matrícula, sem enviar documentos escaneados. Sua carteira
-          digital de estudante confirma seus dados diretamente com o banco, com sua autorização,
-          em poucos segundos.
-        </p>
+        <span className="bp-eyebrow">{t('bank.eyebrow')}</span>
+        <h1>{t('bank.title')}</h1>
+        <p>{t('bank.intro')}</p>
         <div className="bp-hero-trust">
           <div className="bp-trust-item">
             <span className="bp-trust-ic" aria-hidden="true">
@@ -67,7 +60,7 @@ export default function BankPortal() {
                 <path d="M8 11V7a4 4 0 0 1 8 0v4" />
               </svg>
             </span>
-            Verificação segura
+            {t('bank.trust1')}
           </div>
           <div className="bp-trust-item">
             <span className="bp-trust-ic" aria-hidden="true">
@@ -75,7 +68,7 @@ export default function BankPortal() {
                 <path d="M13 2 4 14h6l-1 8 9-12h-6z" />
               </svg>
             </span>
-            Aprovação em minutos
+            {t('bank.trust2')}
           </div>
           <div className="bp-trust-item">
             <span className="bp-trust-ic" aria-hidden="true">
@@ -84,7 +77,7 @@ export default function BankPortal() {
                 <circle cx="12" cy="12" r="9" />
               </svg>
             </span>
-            Zero papelada
+            {t('bank.trust3')}
           </div>
         </div>
       </div>
@@ -99,7 +92,7 @@ export default function BankPortal() {
                 <path d="M3 19h18" />
               </svg>
             </span>
-            Verificação Bancária
+            {t('bank.cardBrand')}
           </div>
 
           <ol className="bp-stepper">
@@ -116,8 +109,8 @@ export default function BankPortal() {
                 <span className="bp-step-line" />
               </div>
               <div className="bp-step-body">
-                <h4>Solicitação enviada</h4>
-                <p>Pedido de verificação criado</p>
+                <h4>{t('bank.step1.title')}</h4>
+                <p>{t('bank.step1.note')}</p>
               </div>
             </li>
 
@@ -134,8 +127,8 @@ export default function BankPortal() {
                 <span className="bp-step-line" />
               </div>
               <div className="bp-step-body">
-                <h4>Processando verificação</h4>
-                <p>Escaneie o código e aguarde a confirmação da carteira</p>
+                <h4>{t('bank.step2.title')}</h4>
+                <p>{t('bank.step2.note')}</p>
               </div>
             </li>
 
@@ -160,11 +153,13 @@ export default function BankPortal() {
               </div>
               <div className="bp-step-body">
                 <h4>
-                  {state.status === 'verified'
-                    ? (verdict?.headline ?? 'Resultado')
-                    : 'Resultado'}
+                  {state.status === 'verified' && verdict
+                    ? verdict.ok
+                      ? t('bank.eligible')
+                      : t('bank.notEligible')
+                    : t('common.result')}
                 </h4>
-                <p>Elegibilidade para Conta Estudantil</p>
+                <p>{t('bank.step3.note')}</p>
               </div>
             </li>
           </ol>
@@ -173,31 +168,31 @@ export default function BankPortal() {
 
           {state.status === 'idle' && (
             <div className="bp-qr-block">
-              <p className="bp-lead">Compartilhe suas credenciais para começar a verificação</p>
+              <p className="bp-lead">{t('bank.leadIdle')}</p>
               <button type="button" className="bp-cta" onClick={retry}>
-                Compartilhar credenciais
+                {t('bank.share')}
               </button>
             </div>
           )}
 
           {state.status === 'loading' && (
             <p role="status" className="bp-status-text">
-              Preparando o código…
+              {t('common.preparing')}
             </p>
           )}
 
           {state.status === 'error' && (
             <div role="alert">
-              <p className="bp-status-text">{state.message}</p>
+              <p className="bp-status-text">{errorText(state.error)}</p>
               <button type="button" className="bp-cta" onClick={retry}>
-                Tentar novamente
+                {t('common.retry')}
               </button>
             </div>
           )}
 
           {state.status === 'ready' && (
             <div className="bp-qr-block">
-              <p className="bp-lead">Abra a carteira digital e escaneie o código abaixo</p>
+              <p className="bp-lead">{t('bank.leadReady')}</p>
               <div className="bp-qr-card">
                 <QRCodeSVG
                   value={state.link}
@@ -207,10 +202,10 @@ export default function BankPortal() {
                   bgColor="#ffffff"
                   fgColor="#1b2130"
                   role="img"
-                  aria-label="QR code: scan with your wallet"
+                  aria-label={t('qr.alt')}
                 />
               </div>
-              <p className="bp-qr-cap">Válido por 5 minutos</p>
+              <p className="bp-qr-cap">{t('common.valid5min')}</p>
             </div>
           )}
 
@@ -221,66 +216,66 @@ export default function BankPortal() {
               {verdict.ok ? (
                 <>
                   <div className="bp-section">
-                    <h3>Dados Pessoais</h3>
+                    <h3>{t('bank.personal')}</h3>
                     <dl>
-                      <div className="bp-kv"><dt>Idade</dt><dd>{field('age')}</dd></div>
-                      <div className="bp-kv"><dt>Gênero</dt><dd>{field('gender')}</dd></div>
-                      <div className="bp-kv"><dt>E-mail</dt><dd>{field('contactEmail')}</dd></div>
-                      <div className="bp-kv"><dt>Telefone</dt><dd>{field('phone')}</dd></div>
-                      <div className="bp-kv"><dt>Endereço</dt><dd>{field('address')}</dd></div>
-                      <div className="bp-kv"><dt>Nacionalidade</dt><dd>{field('nationality')}</dd></div>
+                      <div className="bp-kv"><dt>{t('label.age')}</dt><dd>{field('age')}</dd></div>
+                      <div className="bp-kv"><dt>{t('bank.gender')}</dt><dd>{field('gender')}</dd></div>
+                      <div className="bp-kv"><dt>{t('claim.contactEmail')}</dt><dd>{field('contactEmail')}</dd></div>
+                      <div className="bp-kv"><dt>{t('claim.phone')}</dt><dd>{field('phone')}</dd></div>
+                      <div className="bp-kv"><dt>{t('claim.address')}</dt><dd>{field('address')}</dd></div>
+                      <div className="bp-kv"><dt>{t('claim.nationality')}</dt><dd>{field('nationality')}</dd></div>
                     </dl>
                   </div>
 
                   <div className="bp-section">
-                    <h3>Dados Acadêmicos</h3>
+                    <h3>{t('bank.academic')}</h3>
                     <dl>
-                      <div className="bp-kv"><dt>Instituição</dt><dd>{field('instituteName')}</dd></div>
-                      <div className="bp-kv"><dt>Programa</dt><dd>{field('program')}</dd></div>
-                      <div className="bp-kv"><dt>Curso</dt><dd>{field('courseName')}</dd></div>
-                      <div className="bp-kv"><dt>Matrícula desde</dt><dd>{field('enrollmentDate')}</dd></div>
-                      <div className="bp-kv"><dt>Status</dt><dd>{field('status')}</dd></div>
-                      <div className="bp-kv"><dt>Situação de conclusão</dt><dd>{field('completionStatus')}</dd></div>
-                      <div className="bp-kv"><dt>Aproveitamento</dt><dd>{field('percentage')}</dd></div>
+                      <div className="bp-kv"><dt>{t('label.institute')}</dt><dd>{field('instituteName')}</dd></div>
+                      <div className="bp-kv"><dt>{t('bank.program')}</dt><dd>{field('program')}</dd></div>
+                      <div className="bp-kv"><dt>{t('bank.course')}</dt><dd>{field('courseName')}</dd></div>
+                      <div className="bp-kv"><dt>{t('label.enrolledSince')}</dt><dd>{field('enrollmentDate')}</dd></div>
+                      <div className="bp-kv"><dt>{t('label.status')}</dt><dd>{field('status')}</dd></div>
+                      <div className="bp-kv"><dt>{t('bank.completion')}</dt><dd>{field('completionStatus')}</dd></div>
+                      <div className="bp-kv"><dt>{t('bank.percentage')}</dt><dd>{field('percentage')}</dd></div>
                     </dl>
                   </div>
 
                   {hasGuardianData ? (
                     <div className="bp-section">
-                      <h3>Responsável</h3>
+                      <h3>{t('bank.guardian')}</h3>
                       <dl>
-                        <div className="bp-kv"><dt>Nome</dt><dd>{field('guardianName')}</dd></div>
-                        <div className="bp-kv"><dt>Parentesco</dt><dd>{field('guardianRelationship')}</dd></div>
-                        <div className="bp-kv"><dt>Telefone</dt><dd>{field('guardianPhone')}</dd></div>
+                        <div className="bp-kv"><dt>{t('bank.guardianName')}</dt><dd>{field('guardianName')}</dd></div>
+                        <div className="bp-kv"><dt>{t('bank.guardianRelationship')}</dt><dd>{field('guardianRelationship')}</dd></div>
+                        <div className="bp-kv"><dt>{t('bank.guardianPhone')}</dt><dd>{field('guardianPhone')}</dd></div>
                       </dl>
                     </div>
                   ) : (
-                    <p className="bp-guardian-note">Maior de 18 anos — dados de responsável não exigidos.</p>
+                    <p className="bp-guardian-note">{t('bank.adultNote')}</p>
                   )}
                 </>
               ) : (
                 <>
                   <div className="bp-section">
-                    <h3>Pendências encontradas</h3>
+                    <h3>{t('bank.issues')}</h3>
                     <ul className="bp-pendencias">
-                      {reasons.map((r) => (
+                      {verdict.reasons.map(reasonText).map((r) => (
                         <li key={r}>{r}</li>
                       ))}
                     </ul>
                   </div>
                   <div className="bp-section">
-                    <h3>Dados recebidos</h3>
+                    <h3>{t('bank.received')}</h3>
                     <dl>
-                      <div className="bp-kv"><dt>E-mail</dt><dd>{field('contactEmail')}</dd></div>
-                      <div className="bp-kv"><dt>Instituição</dt><dd>{field('instituteName')}</dd></div>
-                      <div className="bp-kv"><dt>Status</dt><dd>{field('status')}</dd></div>
+                      <div className="bp-kv"><dt>{t('claim.contactEmail')}</dt><dd>{field('contactEmail')}</dd></div>
+                      <div className="bp-kv"><dt>{t('label.institute')}</dt><dd>{field('instituteName')}</dd></div>
+                      <div className="bp-kv"><dt>{t('label.status')}</dt><dd>{field('status')}</dd></div>
                     </dl>
                   </div>
                 </>
               )}
 
               <button type="button" className="bp-pill-btn" onClick={retry}>
-                {verdict.ok ? 'Verificar outro estudante' : 'Tentar novamente'}
+                {verdict.ok ? t('bank.another') : t('common.retry')}
               </button>
             </>
           )}

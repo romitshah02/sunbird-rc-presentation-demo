@@ -1,12 +1,15 @@
 import { QRCodeSVG } from 'qrcode.react'
+import BackLink from './BackLink'
 import { useVpFlow } from './useVpFlow'
 import { body, CREDENTIAL_ID } from './bodies/transport'
 import { evaluateTransport } from './processing/transport'
+import { useI18n } from './i18n/i18n'
 
 // Same request/poll flow and the same claims as every other page (see useVpFlow + VpPage) —
 // this is only a different layout for the transport use case, built as a web portal rather
 // than the shared centered-page template the other relying parties use.
 export default function TransportPortal() {
+  const { t, errorText } = useI18n()
   const { state, retry } = useVpFlow(body)
   const claims = state.status === 'verified' ? (state.claims[CREDENTIAL_ID] ?? {}) : undefined
   const verdict = state.status === 'verified' ? evaluateTransport(state.claims) : null
@@ -19,6 +22,7 @@ export default function TransportPortal() {
   return (
     <main className="tp-page">
       <header className="tp-topbar">
+        <BackLink />
         <div className="tp-brand">
           <span className="tp-mark" aria-hidden="true">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
@@ -28,35 +32,31 @@ export default function TransportPortal() {
               <path d="M4 11h16" />
             </svg>
           </span>
-          Bilhete Único Estudantil
+          {t('transport.brand')}
         </div>
         <span className="tp-live-pill">
           <span className="tp-dot" aria-hidden="true" />
-          Sistema online
+          {t('transport.online')}
         </span>
       </header>
 
       <div className="tp-main">
         <div className="tp-intro">
-          <span className="tp-eyebrow">Prefeitura de Porto Verde · Transporte Coletivo</span>
-          <h1>Verificação do Bilhete Único Estudantil</h1>
-          <p>
-            Confirme em segundos se a matrícula de um estudante está ativa para liberar a tarifa
-            estudantil nos ônibus municipais, sem armazenar nenhum dado pessoal na catraca ou no
-            guichê. Mesmo processo usado hoje no embarque e na emissão de segunda via do bilhete.
-          </p>
+          <span className="tp-eyebrow">{t('transport.eyebrow')}</span>
+          <h1>{t('transport.title')}</h1>
+          <p>{t('transport.intro')}</p>
           <ol className="tp-steps">
             <li>
               <span className="tp-num">1</span>
-              Peça para o estudante abrir a carteira digital no celular.
+              {t('transport.step1')}
             </li>
             <li>
               <span className="tp-num">2</span>
-              O estudante escaneia o código ao lado na catraca ou no guichê.
+              {t('transport.step2')}
             </li>
             <li>
               <span className="tp-num">3</span>
-              O resultado aparece na tela assim que a carteira responde.
+              {t('transport.step3')}
             </li>
           </ol>
           <div className="tp-perks">
@@ -68,9 +68,8 @@ export default function TransportPortal() {
                 </svg>
               </span>
               <span>
-                <strong>Nenhum dado é armazenado</strong>
-                A catraca e o guichê apenas leem e confirmam o status — nada fica salvo no
-                terminal.
+                <strong>{t('transport.perk1.title')}</strong>
+                {t('transport.perk1.text')}
               </span>
             </div>
             <div className="tp-perk">
@@ -80,8 +79,8 @@ export default function TransportPortal() {
                 </svg>
               </span>
               <span>
-                <strong>Resposta em segundos</strong>
-                A confirmação chega assim que a carteira digital do estudante responde ao pedido.
+                <strong>{t('transport.perk2.title')}</strong>
+                {t('transport.perk2.text')}
               </span>
             </div>
             <div className="tp-perk">
@@ -92,9 +91,8 @@ export default function TransportPortal() {
                 </svg>
               </span>
               <span>
-                <strong>Funciona com qualquer carteira compatível</strong>
-                Qualquer carteira digital emitida por uma universidade conveniada ao programa pode
-                ser usada.
+                <strong>{t('transport.perk3.title')}</strong>
+                {t('transport.perk3.text')}
               </span>
             </div>
           </div>
@@ -104,11 +102,11 @@ export default function TransportPortal() {
           <div className="tp-portal">
             {state.status === 'idle' && (
               <div className="tp-ticket">
-                <p className="tp-ticket-label">Passe do Estudante</p>
-                <p className="tp-status-text">Pronto para iniciar a verificação.</p>
+                <p className="tp-ticket-label">{t('transport.pass')}</p>
+                <p className="tp-status-text">{t('common.ready')}</p>
                 <div className="tp-cta-row">
                   <button type="button" className="tp-cta" onClick={retry}>
-                    Escanear com a carteira
+                    {t('transport.scanCta')}
                   </button>
                 </div>
               </div>
@@ -116,20 +114,20 @@ export default function TransportPortal() {
 
             {state.status === 'loading' && (
               <div className="tp-ticket">
-                <p className="tp-ticket-label">Passe do Estudante</p>
+                <p className="tp-ticket-label">{t('transport.pass')}</p>
                 <p role="status" className="tp-status-text">
-                  Preparando o código…
+                  {t('common.preparing')}
                 </p>
               </div>
             )}
 
             {state.status === 'error' && (
               <div className="tp-ticket" role="alert">
-                <p className="tp-ticket-label">Passe do Estudante</p>
-                <p className="tp-status-text">{state.message}</p>
+                <p className="tp-ticket-label">{t('transport.pass')}</p>
+                <p className="tp-status-text">{errorText(state.error)}</p>
                 <div className="tp-cta-row">
                   <button type="button" className="tp-cta" onClick={retry}>
-                    Tentar novamente
+                    {t('common.retry')}
                   </button>
                 </div>
               </div>
@@ -137,7 +135,7 @@ export default function TransportPortal() {
 
             {state.status === 'ready' && (
               <div className="tp-ticket">
-                <p className="tp-ticket-label">Passe do Estudante</p>
+                <p className="tp-ticket-label">{t('transport.pass')}</p>
                 <div className="tp-qr-card">
                   <QRCodeSVG
                     value={state.link}
@@ -147,48 +145,48 @@ export default function TransportPortal() {
                     bgColor="#ffffff"
                     fgColor="#13203f"
                     role="img"
-                    aria-label="QR code: scan with your wallet"
+                    aria-label={t('qr.alt')}
                   />
                 </div>
                 <div className="tp-ticket-foot">
-                  <span>Aguardando leitura</span>
-                  <span>Válido por 5 min</span>
+                  <span>{t('transport.waiting')}</span>
+                  <span>{t('transport.valid5min')}</span>
                 </div>
               </div>
             )}
 
             {state.status === 'verified' && verdict && (
               <div className="tp-ticket" role="status">
-                <p className="tp-ticket-label">Passe do Estudante</p>
+                <p className="tp-ticket-label">{t('transport.pass')}</p>
                 <span className={`tp-result-chip ${verdict.ok ? 'ok' : 'bad'}`}>
-                  {verdict.ok ? '✓ Verificado' : '✗ Recusado'}
+                  {verdict.ok ? t('transport.verified') : t('transport.declined')}
                 </span>
-                <p className="tp-headline">{verdict.headline ?? verdict.message}</p>
+                <p className="tp-headline">{verdict.ok ? t('transport.eligible') : t('transport.notEligible')}</p>
                 <dl className="tp-claim-rows">
                   <div className="tp-row">
-                    <dt>Aluno(a)</dt>
+                    <dt>{t('transport.student')}</dt>
                     <dd>{field('studentName')}</dd>
                   </div>
                   <div className="tp-row">
-                    <dt>Instituição</dt>
+                    <dt>{t('label.institute')}</dt>
                     <dd>{field('instituteName')}</dd>
                   </div>
                   <div className="tp-row">
-                    <dt>Curso</dt>
+                    <dt>{t('transport.program')}</dt>
                     <dd>{field('program')}</dd>
                   </div>
                   <div className="tp-row">
-                    <dt>Matrícula desde</dt>
+                    <dt>{t('label.enrolledSince')}</dt>
                     <dd>{field('enrollmentDate')}</dd>
                   </div>
                   <div className="tp-row">
-                    <dt>Status</dt>
+                    <dt>{t('label.status')}</dt>
                     <dd>{field('status')}</dd>
                   </div>
                 </dl>
                 <div className="tp-cta-row">
                   <button type="button" className="tp-cta" onClick={retry}>
-                    Verificar novamente
+                    {t('transport.again')}
                   </button>
                 </div>
               </div>

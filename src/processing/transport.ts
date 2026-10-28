@@ -5,9 +5,16 @@ import type { Verdict } from './types'
 // Eligible: enrolment status is ACTIVE.
 export function evaluateTransport(claims: Claims): Verdict {
   const c = claims[CREDENTIAL_ID]
-  const name = typeof c?.studentName === 'string' ? c.studentName : 'Student'
+  const name = typeof c?.studentName === 'string' ? c.studentName : undefined
   if (c?.status !== 'ACTIVE') {
-    return { ok: false, headline: '✗ Not Eligible For Bus Pass', message: `${name}: enrolment status is ${String(c?.status ?? 'missing')}` }
+    return {
+      ok: false,
+      name,
+      reasons:
+        c?.status == null
+          ? [{ code: 'statusMissing' }]
+          : [{ code: 'statusNotActive', params: { status: String(c.status) } }],
+    }
   }
-  return { ok: true, headline: '✓ Eligible For Bus Pass', message: name }
+  return { ok: true, name, reasons: [] }
 }
