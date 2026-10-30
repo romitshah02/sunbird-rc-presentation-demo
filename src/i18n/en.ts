@@ -80,6 +80,8 @@ const en = {
   'theatre.granted': '✓ Entry granted',
   'theatre.denied': '✗ Entry denied',
   'theatre.again': 'Scan again',
+  'theatre.discountApplied': 'Discount Applied',
+  'theatre.discountValue': '20%',
 
   'transport.brand': 'Student Travel Card',
   'transport.online': 'System online',
@@ -110,6 +112,8 @@ const en = {
   'transport.student': 'Student',
   'transport.program': 'Course',
   'transport.again': 'Verify again',
+  'transport.discountApplied': 'Discount Applied',
+  'transport.discountValue': '40%',
 
   'bank.navPersonal': 'Personal',
   'bank.navAccount': 'University Account',

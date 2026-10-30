@@ -79,6 +79,8 @@ const pt: Dict = {
   'theatre.granted': '✓ Entrada liberada',
   'theatre.denied': '✗ Entrada negada',
   'theatre.again': 'Escanear novamente',
+  'theatre.discountApplied': 'Desconto Aplicado',
+  'theatre.discountValue': '20%',
 
   'transport.brand': 'Bilhete Único Estudantil',
   'transport.online': 'Sistema online',
@@ -109,6 +111,8 @@ const pt: Dict = {
   'transport.student': 'Aluno(a)',
   'transport.program': 'Curso',
   'transport.again': 'Verificar novamente',
+  'transport.discountApplied': 'Desconto Aplicado',
+  'transport.discountValue': '40%',
 
   'bank.navPersonal': 'Pessoa Física',
   'bank.navAccount': 'Conta Universitária',

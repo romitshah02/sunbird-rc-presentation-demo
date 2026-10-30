@@ -204,6 +204,8 @@ body { margin: 0; }
 .tp-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0.8rem; background: #fff; border-radius: 0.65rem; font-size: 0.85rem; }
 .tp-row dt { margin: 0; color: #5b6b8c; }
 .tp-row dd { margin: 0; font-weight: 600; color: #13203f; text-align: end; unicode-bidi: plaintext; }
+.tp-row.tp-discount { background: #1f3a8a; }
+.tp-row.tp-discount dt, .tp-row.tp-discount dd { color: #fff; font-weight: 700; }
 
 /*
   Bank page only (BankPortal.tsx) — account-opening site chrome + a step-tracker verification
@@ -363,6 +365,7 @@ body { margin: 0; }
 .tt-total { border-top: 1px solid #efece6; margin-top: 0.3rem; padding-top: 0.8rem; font-weight: 700; color: #1c1a18; font-size: 0.98rem; }
 .tt-total dd.ok { color: #1f8a5a; }
 .tt-total dd.bad { color: #c23b3b; }
+.tt-discount dt, .tt-discount dd { color: #9c1f1f; font-weight: 700; }
 
 /*
   Education page only (EducationPortal.tsx) — full-disclosure transfer-admissions review,
@@ -509,3 +512,21 @@ body { margin: 0; }
   .ed-spinner { animation: none; }
   .ed-check-status .ed-spinner, .ed-check-mark, .ed-decision-row { transition: none; }
 }
+
+/* Shared "Discount Applied" tick (TheatrePortal, TransportPortal) — pops in once the student
+   is eligible, instead of appearing as static text. */
+.tick-row { display: inline-flex; align-items: center; gap: 0.4rem; }
+.tick {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1rem; height: 1rem; border-radius: 50%; flex: none; font-size: 0.62rem; line-height: 1;
+  animation: tick-pop 480ms cubic-bezier(0.34,1.56,0.64,1) both;
+  animation-delay: 250ms;
+}
+.tick.on-light { background: #1f8a5a; color: #fff; }
+.tick.on-dark { background: #fff; color: #1f3a8a; }
+@keyframes tick-pop {
+  0% { transform: scale(0); opacity: 0; }
+  65% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .tick { animation: none; } }

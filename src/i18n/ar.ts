@@ -78,6 +78,8 @@ const ar: Dict = {
   'theatre.granted': '✓ الدخول مسموح',
   'theatre.denied': '✗ الدخول مرفوض',
   'theatre.again': 'امسح مرة أخرى',
+  'theatre.discountApplied': 'الخصم المطبق',
+  'theatre.discountValue': '20%',
 
   'transport.brand': 'بطاقة سفر الطالب',
   'transport.online': 'النظام متصل',
@@ -105,6 +107,8 @@ const ar: Dict = {
   'transport.student': 'الطالب',
   'transport.program': 'المقرر',
   'transport.again': 'تحقق مرة أخرى',
+  'transport.discountApplied': 'الخصم المطبق',
+  'transport.discountValue': '40%',
 
   'bank.navPersonal': 'الأفراد',
   'bank.navAccount': 'الحساب الجامعي',

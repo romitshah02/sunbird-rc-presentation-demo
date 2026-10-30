@@ -145,6 +145,15 @@ export default function TheatrePortal() {
                   <dt>{t('label.age')}</dt>
                   <dd>{field('age')}</dd>
                 </div>
+                {verdict.ok && (
+                  <div className="tt-line tt-discount">
+                    <dt>{t('theatre.discountApplied')}</dt>
+                    <dd className="tick-row">
+                      <span className="tick on-light" aria-hidden="true">✓</span>
+                      {t('theatre.discountValue')}
+                    </dd>
+                  </div>
+                )}
                 <div className="tt-line tt-total">
                   <dt>{t('common.result')}</dt>
                   <dd className={verdict.ok ? 'ok' : 'bad'}>

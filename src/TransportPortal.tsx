@@ -183,6 +183,15 @@ export default function TransportPortal() {
                     <dt>{t('label.status')}</dt>
                     <dd>{field('status')}</dd>
                   </div>
+                  {verdict.ok && (
+                    <div className="tp-row tp-discount">
+                      <dt>{t('transport.discountApplied')}</dt>
+                      <dd className="tick-row">
+                        <span className="tick on-dark" aria-hidden="true">✓</span>
+                        {t('transport.discountValue')}
+                      </dd>
+                    </div>
+                  )}
                 </dl>
                 <div className="tp-cta-row">
                   <button type="button" className="tp-cta" onClick={retry}>
