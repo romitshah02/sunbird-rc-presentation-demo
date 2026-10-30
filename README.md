@@ -4,19 +4,20 @@ A demo app that shows OID4VC verifiable credentials in use. A student holds a cr
 
 Each page plays a different relying party. It asks the verifier for a presentation request, shows the request as a QR code, and waits for the holder to scan it with a wallet and share their student credential. It then shows the claims it received and a verdict.
 
-The home page at `/` lists the three options and links to each page. The pages themselves have no navigation back, so open them from the home page or by URL.
+The home page at `/` lists the four options and links to each page. Each page has a **Back** link to the home page.
 
 | URL | Relying party | Eligibility check |
 |---|---|---|
 | `/theatre` | Movie theatre | Kid: `status` is `ACTIVE`. Adult (18+): `status` is `ACTIVE` and `age` is 18 or more. Chosen with the Child / Adult toggle. |
 | `/transport` | City bus transport | `status` is `ACTIVE`. Headline: "Eligible For Bus Pass". |
 | `/bank` | Student bank account | `status` is `ACTIVE`, name, email, phone, address and nationality are present, and the student is 18+ or has guardian name, relationship and phone. Headline: "Eligible For Student Bank Account". |
+| `/education` | University transfer admissions | `status` is not `WITHDRAWN` and `completionStatus` is not `DISCONTINUED` or `FAILED`. Laid out as a university back-office screen (sidebar + profile card + detail panels) rather than the ticket/stepper layout of the other pages, requesting the full claim set (institution, programme, course, enrolment date, status, completion status, academic performance) for a transfer-admissions review. |
 
 `completionStatus` is not checked on any page.
 
 ## How it works
 
-1. The holder clicks **Request**.
+1. The holder clicks **Request** (or **Request academic record** on `/education`).
 2. The page POSTs that page's static DCQL request body to the verifier (`VITE_VERIFIER_URL`).
 3. The verifier answers with a `transaction_id` and `qr_data`, an `openid4vp://` link. The page renders `qr_data` as the QR code.
 4. The holder scans it with a wallet and approves sharing the requested claims.
