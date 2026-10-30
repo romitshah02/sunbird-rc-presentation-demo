@@ -107,7 +107,7 @@ const fr: Dict = {
   'transport.eligible': '✓ Éligible au pass bus',
   'transport.notEligible': '✗ Non éligible au pass bus',
   'transport.student': 'Étudiant(e)',
-  'transport.program': 'Cursus',
+  'label.program': 'Cursus',
   'transport.again': 'Vérifier à nouveau',
   'transport.discountApplied': 'Réduction appliquée',
   'transport.discountValue': '40%',

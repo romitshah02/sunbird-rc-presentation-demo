@@ -1,7 +1,7 @@
 import { QRCodeSVG } from 'qrcode.react'
 import BackLink from './BackLink'
 import { useVpFlow } from './useVpFlow'
-import { body, CREDENTIAL_ID } from './bodies/transport'
+import { body, ENROLMENT_ID } from './bodies/transport'
 import { evaluateTransport } from './processing/transport'
 import { useI18n } from './i18n/i18n'
 
@@ -11,7 +11,7 @@ import { useI18n } from './i18n/i18n'
 export default function TransportPortal() {
   const { t, errorText } = useI18n()
   const { state, retry } = useVpFlow(body)
-  const claims = state.status === 'verified' ? (state.claims[CREDENTIAL_ID] ?? {}) : undefined
+  const claims = state.status === 'verified' ? (state.claims[ENROLMENT_ID] ?? {}) : undefined
   const verdict = state.status === 'verified' ? evaluateTransport(state.claims) : null
 
   const field = (name: string) => {
@@ -164,24 +164,16 @@ export default function TransportPortal() {
                 <p className="tp-headline">{verdict.ok ? t('transport.eligible') : t('transport.notEligible')}</p>
                 <dl className="tp-claim-rows">
                   <div className="tp-row">
-                    <dt>{t('transport.student')}</dt>
-                    <dd>{field('studentName')}</dd>
-                  </div>
-                  <div className="tp-row">
                     <dt>{t('label.institute')}</dt>
                     <dd>{field('instituteName')}</dd>
                   </div>
                   <div className="tp-row">
-                    <dt>{t('transport.program')}</dt>
+                    <dt>{t('label.program')}</dt>
                     <dd>{field('program')}</dd>
                   </div>
                   <div className="tp-row">
-                    <dt>{t('label.enrolledSince')}</dt>
-                    <dd>{field('enrollmentDate')}</dd>
-                  </div>
-                  <div className="tp-row">
                     <dt>{t('label.status')}</dt>
-                    <dd>{field('status')}</dd>
+                    <dd>{field('enrollmentStatus')}</dd>
                   </div>
                   {verdict.ok && (
                     <div className="tp-row tp-discount">
