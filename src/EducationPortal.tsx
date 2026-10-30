@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import BackLink from './BackLink'
 import { useVpFlow } from './useVpFlow'
 import { useCheckSequence } from './useCheckSequence'
-import { body, CREDENTIAL_ID } from './bodies/education'
+import { body, ENROLMENT_ID, PROFILE_ID } from './bodies/education'
 import { evaluateEducation } from './processing/education'
 import { useI18n } from './i18n/i18n'
 
@@ -24,7 +24,7 @@ type RowState = 'notRequested' | 'waiting' | 'checking' | 'done'
 export default function EducationPortal() {
   const { t, reasonText, errorText } = useI18n()
   const { state, retry } = useVpFlow(body)
-  const claims = state.status === 'verified' ? (state.claims[CREDENTIAL_ID] ?? {}) : undefined
+  const claims = state.status === 'verified' ? ({ ...state.claims[PROFILE_ID], ...state.claims[ENROLMENT_ID] }) : undefined
   const verdict = state.status === 'verified' ? evaluateEducation(state.claims) : null
   const verified = state.status === 'verified'
   const { done: checksDone, settled } = useCheckSequence(verified, CHECK_COUNT)
@@ -187,7 +187,7 @@ export default function EducationPortal() {
             <div className="ed-info-grid">
               <div className="ed-info-item">
                 <label>{t('label.status')}</label>
-                <div className="value">{field('status')}</div>
+                <div className="value">{field('enrollmentStatus')}</div>
               </div>
               <div className="ed-info-item">
                 <label>{t('education.completion')}</label>
