@@ -1,19 +1,20 @@
 import { QRCodeSVG } from 'qrcode.react'
 import BackLink from './BackLink'
 import { useVpFlow } from './useVpFlow'
-import { body, CREDENTIAL_ID } from './bodies/bank'
+import { body, ENROLMENT_ID, PROFILE_ID } from './bodies/bank'
 import { evaluateBank } from './processing/bank'
 import { useI18n } from './i18n/i18n'
 
 const present = (v: unknown) => (typeof v === 'string' ? v.trim() !== '' : v != null)
 
-// Same request/poll flow and the same 17 claims as every other page (see useVpFlow + VpPage) —
+// Same request/poll flow, asking for the profile and enrolment credentials (claim names don't
+// overlap, so they are merged into one lookup for field()). Same flow as every other page (see useVpFlow + VpPage) —
 // this is only a different layout for the bank use case: a bank-style "account opening" page
 // with a step tracker (sent -> processing -> result) instead of the shared centered template.
 export default function BankPortal() {
   const { t, reasonText, errorText } = useI18n()
   const { state, retry } = useVpFlow(body)
-  const claims = state.status === 'verified' ? (state.claims[CREDENTIAL_ID] ?? {}) : undefined
+  const claims = state.status === 'verified' ? ({ ...state.claims[PROFILE_ID], ...state.claims[ENROLMENT_ID] }) : undefined
   const verdict = state.status === 'verified' ? evaluateBank(state.claims) : null
 
   const field = (name: string) => {
@@ -234,7 +235,7 @@ export default function BankPortal() {
                       <div className="bp-kv"><dt>{t('bank.program')}</dt><dd>{field('program')}</dd></div>
                       <div className="bp-kv"><dt>{t('bank.course')}</dt><dd>{field('courseName')}</dd></div>
                       <div className="bp-kv"><dt>{t('label.enrolledSince')}</dt><dd>{field('enrollmentDate')}</dd></div>
-                      <div className="bp-kv"><dt>{t('label.status')}</dt><dd>{field('status')}</dd></div>
+                      <div className="bp-kv"><dt>{t('label.status')}</dt><dd>{field('enrollmentStatus')}</dd></div>
                       <div className="bp-kv"><dt>{t('bank.completion')}</dt><dd>{field('completionStatus')}</dd></div>
                       <div className="bp-kv"><dt>{t('bank.percentage')}</dt><dd>{field('percentage')}</dd></div>
                     </dl>
@@ -268,7 +269,7 @@ export default function BankPortal() {
                     <dl>
                       <div className="bp-kv"><dt>{t('claim.contactEmail')}</dt><dd>{field('contactEmail')}</dd></div>
                       <div className="bp-kv"><dt>{t('label.institute')}</dt><dd>{field('instituteName')}</dd></div>
-                      <div className="bp-kv"><dt>{t('label.status')}</dt><dd>{field('status')}</dd></div>
+                      <div className="bp-kv"><dt>{t('label.status')}</dt><dd>{field('enrollmentStatus')}</dd></div>
                     </dl>
                   </div>
                 </>

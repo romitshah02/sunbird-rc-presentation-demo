@@ -99,7 +99,7 @@ const en = {
   'transport.eligible': '✓ Eligible For Bus Pass',
   'transport.notEligible': '✗ Not Eligible For Bus Pass',
   'transport.student': 'Student',
-  'transport.program': 'Course',
+  'label.program': 'Course',
   'transport.again': 'Verify again',
 
   'bank.navPersonal': 'Personal',

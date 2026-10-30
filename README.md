@@ -2,17 +2,26 @@
 
 A demo app that shows OID4VC verifiable credentials in use. A student holds a credential issued through Sunbird RC in their wallet, and this app shows how different services can ask for it and verify it. The app covers the presentation side (OpenID4VP) and uses the Sunbird RC sandbox verifier.
 
-Each page plays a different relying party. It asks the verifier for a presentation request, shows the request as a QR code, and waits for the holder to scan it with a wallet and share their student credential. It then shows the claims it received and a verdict.
+Each page plays a different relying party. It asks the verifier for a presentation request, shows the request as a QR code, and waits for the holder to scan it with a wallet and share their student credentials. It then shows the claims it received and a verdict.
 
 The home page at `/` lists the three options and links to each page. The pages themselves have no navigation back, so open them from the home page or by URL.
 
 | URL | Relying party | Eligibility check |
 |---|---|---|
-| `/theatre` | Movie theatre | Kid: `status` is `ACTIVE`. Adult (18+): `status` is `ACTIVE` and `age` is 18 or more. Chosen with the Child / Adult toggle. |
-| `/transport` | City bus transport | `status` is `ACTIVE`. Headline: "Eligible For Bus Pass". |
-| `/bank` | Student bank account | `status` is `ACTIVE`, name, email, phone, address and nationality are present, and the student is 18+ or has guardian name, relationship and phone. Headline: "Eligible For Student Bank Account". |
+| `/theatre` | Movie theatre | Asks for Student Enrolment (institution, programme, `enrollmentStatus`) and Student Profile (`age` only). Kid: `enrollmentStatus` is `ACTIVE`. Adult (18+): `enrollmentStatus` is `ACTIVE` and the profile `age` is 18 or more. Chosen with the Child / Adult toggle. |
+| `/transport` | City bus transport | Asks for Student Enrolment only (institution, programme, `enrollmentStatus`). `enrollmentStatus` is `ACTIVE`. Headline: "Eligible For Bus Pass". |
+| `/bank` | Student bank account | Asks for both credentials, and both are required. `enrollmentStatus` (Enrolment) is `ACTIVE`, name, email, phone, address and nationality (Profile) are present, and the student is 18+ or has guardian name, relationship and phone (Profile). Headline: "Eligible For Student Bank Account". |
 
-`completionStatus` is not checked on any page.
+`completionStatus` is not checked on any page. The theatre and bus pages do not ask for the student's name or enrolment date.
+
+## Credentials
+
+The app asks the wallet for two credential types:
+
+- **Student Profile** (`.../vct/student-profile`): `studentName`, `age`, `gender`, `contactEmail`, `phone`, `address`, `nationality`, `guardianName`, `guardianRelationship`, `guardianPhone`.
+- **Student Enrolment** (`.../vct/student-enrolment`): `studentOsid`, `instituteName`, `academicYear`, `program`, `courseName`, `enrollmentDate`, `enrollmentStatus` (`ACTIVE`, `COMPLETED` or `WITHDRAWN`), `completionDate`, `completionStatus`, `percentage`.
+
+The issuer host of these `vct` values lives in one place, `src/bodies/credentials.ts`. Change it there if the issuer moves.
 
 ## How it works
 
@@ -23,7 +32,7 @@ The home page at `/` lists the three options and links to each page. The pages t
 5. The page polls `GET <<verifier_url>>/vp/status/{transaction_id}` every 2 seconds until the status says `verified: true`. It gives up after 5 minutes.
 6. The received claims are listed, and the page's check produces the verdict.
 
-The request bodies use the `dc+sd-jwt` format with the Sunbird RC sandbox student credential type (`.../vct/student`). The bodies request claims without value filters, so the wallet presents any student credential and the app's own checks decide eligibility and show the reason, for example "enrolment status is INACTIVE".
+The request bodies use the `dc+sd-jwt` format with the Student Profile and Student Enrolment credential types (see Credentials above). A page asks for one or two credentials, each with its own DCQL query id (for example `theatre_enrolment` and `theatre_profile`), and the received claims are keyed by that id. The bodies request claims without value filters, so the wallet presents any matching credential and the app's own checks decide eligibility and show the reason, for example "enrolment status is WITHDRAWN".
 
 ## Run it
 
@@ -82,7 +91,7 @@ src/
   LanguageSelect.tsx  the language dropdown, shown on every page
   VpPage.tsx        shared page: Request button, QR, status polling, claims and verdict
   vpRequest.ts      verifier calls: requestQr (POST) and awaitClaims (status polling)
-  bodies/           the static request body for each page
+  bodies/           the static request body for each page, and credentials.ts with the vct values
   processing/       the eligibility check for each page, and the shared Verdict type
   pages/            one thin page component per route
   index.css         per-page themes (theatre, transport, bank)
