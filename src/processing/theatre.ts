@@ -1,23 +1,37 @@
-import { ENROLMENT_ID, PROFILE_ID } from '../bodies/theatre'
+import { CREDENTIAL_ID } from '../bodies/theatre'
 import type { Claims } from '../vpRequest'
-import { statusReason } from './enrolment'
 import type { Verdict } from './types'
 
 export type TicketType = 'kid' | 'adult'
 
 const MIN_ADULT_AGE = 18
 
-// Kid: enrollmentStatus ACTIVE. Adult: ACTIVE and the profile age is 18+.
+// Kid: valid (active) student. Adult: valid student who is also 18+.
 export function evaluateTheatre(type: TicketType, claims: Claims): Verdict {
-  const status = statusReason(claims[ENROLMENT_ID]?.enrollmentStatus)
-  if (status) return { ok: false, reasons: [status] }
-
-  if (type === 'adult') {
-    const age = claims[PROFILE_ID]?.age
-    if (age == null) return { ok: false, reasons: [{ code: 'missingAge' }] }
-    if (!Number.isFinite(Number(age)) || Number(age) < MIN_ADULT_AGE) {
-      return { ok: false, reasons: [{ code: 'underAge', params: { age: String(age), min: MIN_ADULT_AGE } }] }
+  const c = claims[CREDENTIAL_ID]
+  const name = typeof c?.studentName === 'string' ? c.studentName : undefined
+  if (c?.status !== 'ACTIVE') {
+    return {
+      ok: false,
+      name,
+      reasons:
+        c?.status == null
+          ? [{ code: 'statusMissing' }]
+          : [{ code: 'statusNotActive', params: { status: String(c.status) } }],
     }
   }
-  return { ok: true, reasons: [] }
+  if (type === 'adult') {
+    const age = Number(c.age)
+    if (!Number.isFinite(age) || age < MIN_ADULT_AGE) {
+      return {
+        ok: false,
+        name,
+        reasons:
+          c.age == null
+            ? [{ code: 'missingAge' }]
+            : [{ code: 'underAge', params: { age: String(c.age), min: MIN_ADULT_AGE } }],
+      }
+    }
+  }
+  return { ok: true, name, reasons: [] }
 }

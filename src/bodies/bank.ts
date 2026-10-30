@@ -1,9 +1,4 @@
-import { ENROLMENT_VCT, PROFILE_VCT } from './credentials'
-
-export const PROFILE_ID = 'bank_profile'
-export const ENROLMENT_ID = 'bank_enrolment'
-
-const profileClaims = [
+const claims = [
   'studentName',
   'age',
   'gender',
@@ -14,33 +9,25 @@ const profileClaims = [
   'guardianName',
   'guardianRelationship',
   'guardianPhone',
-]
-
-const enrolmentClaims = [
   'instituteName',
   'program',
-  'courseName',
   'enrollmentDate',
-  'enrollmentStatus',
+  'status',
+  'courseName',
   'completionStatus',
   'percentage',
 ]
 
-// Both credentials are required (no credential_sets).
+export const CREDENTIAL_ID = 'bank_account'
+
 export const body = {
   dcql_query: {
     credentials: [
       {
-        id: PROFILE_ID,
+        id: CREDENTIAL_ID,
         format: 'dc+sd-jwt',
-        meta: { vct_values: [PROFILE_VCT] },
-        claims: profileClaims.map((c) => ({ path: [c] })),
-      },
-      {
-        id: ENROLMENT_ID,
-        format: 'dc+sd-jwt',
-        meta: { vct_values: [ENROLMENT_VCT] },
-        claims: enrolmentClaims.map((c) => ({ path: [c] })),
+        meta: { vct_values: ['https://sandbox-rc.sunbird.org/horizonte/vct/student'] },
+        claims: claims.map((c) => ({ path: [c] })),
       },
     ],
   },

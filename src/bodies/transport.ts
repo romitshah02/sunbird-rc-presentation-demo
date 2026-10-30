@@ -1,16 +1,19 @@
-import { ENROLMENT_VCT } from './credentials'
+export const CREDENTIAL_ID = 'bus_transport'
 
-export const ENROLMENT_ID = 'bus_enrolment'
-
-// Minimal disclosure: institution, programme and enrolment status. No name, no dates.
 export const body = {
   dcql_query: {
     credentials: [
       {
-        id: ENROLMENT_ID,
+        id: CREDENTIAL_ID,
         format: 'dc+sd-jwt',
-        meta: { vct_values: [ENROLMENT_VCT] },
-        claims: [{ path: ['instituteName'] }, { path: ['program'] }, { path: ['enrollmentStatus'] }],
+        meta: { vct_values: ['https://sandbox-rc.sunbird.org/horizonte/vct/student'] },
+        claims: [
+          { path: ['studentName'] },
+          { path: ['instituteName'] },
+          { path: ['program'] },
+          { path: ['enrollmentDate'] },
+          { path: ['status'] },
+        ],
       },
     ],
   },

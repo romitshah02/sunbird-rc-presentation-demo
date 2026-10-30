@@ -94,7 +94,7 @@ const ar: Dict = {
   'transport.eligible': '✓ مؤهل لبطاقة الحافلة',
   'transport.notEligible': '✗ غير مؤهل لبطاقة الحافلة',
   'transport.student': 'الطالب',
-  'label.program': 'المقرر',
+  'transport.program': 'المقرر',
   'transport.again': 'تحقق مرة أخرى',
 
   'bank.navPersonal': 'الأفراد',

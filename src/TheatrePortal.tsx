@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import BackLink from './BackLink'
 import { useVpFlow } from './useVpFlow'
-import { body, ENROLMENT_ID, PROFILE_ID } from './bodies/theatre'
+import { body, CREDENTIAL_ID } from './bodies/theatre'
 import { evaluateTheatre, type TicketType } from './processing/theatre'
 import { useI18n } from './i18n/i18n'
 
@@ -14,16 +14,16 @@ const OPTIONS = [
   { value: 'adult', label: 'theatre.adult' },
 ] as const
 
-// Same request/poll flow as every other page (see useVpFlow), asking for the enrolment
-// credential (status) and the profile credential (age only). The claim names don't overlap, so
-// they are merged into one lookup for field(). Styled as a ticket stub.
+// Same request/poll flow and the same two claims (age, status) as before (see useVpFlow +
+// VpPage) — this is only a different layout, styled as a ticket stub instead of the shared
+// centered template.
 export default function TheatrePortal() {
   const { t, reasonText, errorText } = useI18n()
   const movieTitle = t('theatre.movieTitle')
   const [type, setType] = useState<TicketType>('kid')
   const { state, retry } = useVpFlow(body)
   const verdict = state.status === 'verified' ? evaluateTheatre(type, state.claims) : null
-  const claims = state.status === 'verified' ? ({ ...state.claims[PROFILE_ID], ...state.claims[ENROLMENT_ID] }) : undefined
+  const claims = state.status === 'verified' ? (state.claims[CREDENTIAL_ID] ?? {}) : undefined
   const who = verdict?.name ?? t('common.student')
   const field = (name: string) => {
     const v = claims?.[name]
@@ -138,16 +138,8 @@ export default function TheatrePortal() {
             <div className="tt-foot">
               <dl className="tt-foot-list">
                 <div className="tt-line">
-                  <dt>{t('label.institute')}</dt>
-                  <dd>{field('instituteName')}</dd>
-                </div>
-                <div className="tt-line">
-                  <dt>{t('label.program')}</dt>
-                  <dd>{field('program')}</dd>
-                </div>
-                <div className="tt-line">
                   <dt>{t('label.status')}</dt>
-                  <dd>{field('enrollmentStatus')}</dd>
+                  <dd>{field('status')}</dd>
                 </div>
                 <div className="tt-line">
                   <dt>{t('label.age')}</dt>

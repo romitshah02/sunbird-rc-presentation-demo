@@ -1,10 +1,20 @@
-import { ENROLMENT_ID } from '../bodies/transport'
+import { CREDENTIAL_ID } from '../bodies/transport'
 import type { Claims } from '../vpRequest'
-import { statusReason } from './enrolment'
 import type { Verdict } from './types'
 
-// Eligible: enrollmentStatus is ACTIVE. No name is requested, so the verdict has none.
+// Eligible: enrolment status is ACTIVE.
 export function evaluateTransport(claims: Claims): Verdict {
-  const reason = statusReason(claims[ENROLMENT_ID]?.enrollmentStatus)
-  return { ok: !reason, reasons: reason ? [reason] : [] }
+  const c = claims[CREDENTIAL_ID]
+  const name = typeof c?.studentName === 'string' ? c.studentName : undefined
+  if (c?.status !== 'ACTIVE') {
+    return {
+      ok: false,
+      name,
+      reasons:
+        c?.status == null
+          ? [{ code: 'statusMissing' }]
+          : [{ code: 'statusNotActive', params: { status: String(c.status) } }],
+    }
+  }
+  return { ok: true, name, reasons: [] }
 }
