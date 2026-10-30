@@ -17,10 +17,11 @@ export type ReasonCode =
   | 'missingAge'
   | 'missingFields'
   | 'minorNoGuardian'
+  | 'completionNotEligible'
 
 export interface Reason {
   code: ReasonCode
-  params?: { status?: string; age?: string; min?: number; fields?: ClaimName[] }
+  params?: { status?: string; age?: string; min?: number; fields?: ClaimName[]; completion?: string }
 }
 
 export interface Verdict {

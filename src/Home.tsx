@@ -8,6 +8,7 @@ const OPTIONS = [
   { to: '/theatre', tone: 'theatre', art: `${BASE}movie_page.svg`, title: 'home.theatre.title', note: 'home.theatre.note' },
   { to: '/transport', tone: 'transport', art: `${BASE}bus_page.svg`, title: 'home.transport.title', note: 'home.transport.note' },
   { to: '/bank', tone: 'bank', art: `${BASE}bank_page.svg`, title: 'home.bank.title', note: 'home.bank.note' },
+  { to: '/education', tone: 'education', art: `${BASE}education_page.svg`, title: 'home.education.title', note: 'home.education.note' },
 ] as const
 
 export default function Home() {

@@ -8,6 +8,7 @@ import Home from './Home'
 import Theatre from './pages/Theatre'
 import Transport from './pages/Transport'
 import Bank from './pages/Bank'
+import Education from './pages/Education'
 
 const NotFound = () => <p className="not-found">{useI18n().t('notFound')}</p>
 
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/theatre" element={<Theatre />} />
           <Route path="/transport" element={<Transport />} />
           <Route path="/bank" element={<Bank />} />
+          <Route path="/education" element={<Education />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <LanguageSelect />
