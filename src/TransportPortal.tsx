@@ -164,10 +164,6 @@ export default function TransportPortal() {
                 <p className="tp-headline">{verdict.ok ? t('transport.eligible') : t('transport.notEligible')}</p>
                 <dl className="tp-claim-rows">
                   <div className="tp-row">
-                    <dt>{t('label.institute')}</dt>
-                    <dd>{field('instituteName')}</dd>
-                  </div>
-                  <div className="tp-row">
                     <dt>{t('label.program')}</dt>
                     <dd>{field('program')}</dd>
                   </div>

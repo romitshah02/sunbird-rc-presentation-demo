@@ -10,7 +10,7 @@ export const body = {
         id: ENROLMENT_ID,
         format: 'dc+sd-jwt',
         meta: { vct_values: [ENROLMENT_VCT] },
-        claims: [{ path: ['instituteName'] }, { path: ['program'] }, { path: ['enrollmentStatus'] }],
+        claims: [{ path: ['program'] }, { path: ['enrollmentStatus'] }],
       },
     ],
   },

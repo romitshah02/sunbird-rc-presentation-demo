@@ -18,8 +18,8 @@ The home page at `/` lists the three options and links to each page. The pages t
 
 The app asks the wallet for two credential types:
 
-- **Student Profile** (`.../vct/student-profile`): `studentName`, `age`, `gender`, `contactEmail`, `phone`, `address`, `nationality`, `guardianName`, `guardianRelationship`, `guardianPhone`.
-- **Student Enrolment** (`.../vct/student-enrolment`): `studentOsid`, `instituteName`, `academicYear`, `program`, `courseName`, `enrollmentDate`, `enrollmentStatus` (`ACTIVE`, `COMPLETED` or `WITHDRAWN`), `completionDate`, `completionStatus`, `percentage`.
+- **Student Profile** (`.../vct/student-profile`): `studentName`, `age`, `gender`, `contactEmail`, `phone`, `address`, `nationality`, `guardianName`, `guardianRelationship`, `guardianPhone`, `instituteName`.
+- **Student Enrolment** (`.../vct/student-enrolment`): `studentOsid`, `academicYear`, `program`, `courseName`, `enrollmentDate`, `enrollmentStatus` (`ACTIVE`, `COMPLETED` or `WITHDRAWN`), `completionDate`, `completionStatus`, `percentage`.
 
 The issuer host of these `vct` values lives in one place, `src/bodies/credentials.ts`. Change it there if the issuer moves.
 

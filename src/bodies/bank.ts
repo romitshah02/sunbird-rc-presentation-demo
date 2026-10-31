@@ -14,10 +14,10 @@ const profileClaims = [
   'guardianName',
   'guardianRelationship',
   'guardianPhone',
+  'instituteName'
 ]
 
 const enrolmentClaims = [
-  'instituteName',
   'program',
   'courseName',
   'enrollmentDate',
